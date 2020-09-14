@@ -89,6 +89,23 @@ class WeChatWxa(BaseWeChatAPI):
             data=tpl_data
         )
 
+    def send_subscribe_message(self, user_id, template_id, data, page=None):
+        """
+        发送订阅消息
+        详情请参考
+        https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
+        """
+        subs_data = optionaldict(
+            touser=user_id,
+            template_id=template_id,
+            page=page,
+            data=data,
+        )
+        return self._post(
+            'cgi-bin/message/subscribe/send',
+            data=subs_data
+        )
+
     def modify_domain(self, action, request_domain=(), wsrequest_domain=(), upload_domain=(), download_domain=()):
         """
         修改小程序服务器授权域名
@@ -200,23 +217,37 @@ class WeChatWxa(BaseWeChatAPI):
             result_processor=lambda x: x['page_list'],
         )
 
-    def submit_audit(self, item_list):
+    def submit_audit(self, data):
         """
         将第三方提交的代码包提交审核
         详情请参考
-        https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&id=open1489140610_Uavc4
-
-        :param item_list: 提交审核项的一个列表（至少填写1项，至多填写5项）
-        :type item_list: list[dict]
-        :return: 审核编号
-        :rtype: int
+        https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Mini_Programs/code/submit_audit.html
         """
         return self._post(
             'wxa/submit_audit',
-            data={
-                'item_list': item_list,
-            },
-            result_processor=lambda x: x['auditid'],
+            data=data
+        )
+
+    def undo_code_audit(self):
+        """
+        调用本接口可以撤回当前的代码审核单
+        注意： 单个帐号每天审核撤回次数最多不超过 1 次，一个月不超过 10 次。
+        https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Mini_Programs/code/undocodeaudit.html
+        """
+        return self._get(
+            'wxa/undocodeaudit'
+        )
+
+    def revert_code_release(self):
+        """
+        调用本接口可以将小程序的线上版本进行回退
+        注意：
+        1. 如果没有上一个线上版本，将无法回退
+        2. 只能向上回退一个版本，即当前版本回退后，不能再调用版本回退接口
+        https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Mini_Programs/code/revertcoderelease.html
+        """
+        return self._get(
+            'wxa/revertcoderelease'
         )
 
     def speed_audit(self, audit_id):
@@ -474,4 +505,79 @@ class WeChatWxa(BaseWeChatAPI):
             }
         )
 
+    def check_image_security(self, media):
+        """
+        校验一张图片是否含有违法违规内容。
+        详情请参考
+        https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/sec-check/security.imgSecCheck.html
 
+        :param media: 要检测的图片文件，格式支持PNG、JPEG、JPG、GIF，图片尺寸不超过 750px x 1334px
+        :return:
+        """
+        return self._post(
+            'wxa/img_sec_check',
+            files={
+                'media': media,
+            }
+        )
+
+    def check_text_security(self, content):
+        """
+        检查一段文本是否含有违法违规内容。
+        详情请参考
+        https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/sec-check/security.msgSecCheck.html
+
+        :param content: 要检测的文本内容，长度不超过 500KB
+        :return:
+        """
+        return self._post(
+            'wxa/msg_sec_check',
+            data={
+                'content': content,
+            }
+        )
+
+    def speed_up_audit(self, auditid):
+        """
+        加急审核申请
+        有加急次数的第三方可以通过该接口，对已经提审的小程序进行加急操作，加急后的小程序预计2-12小时内审完。
+        https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Mini_Programs/code/speedup_audit.html
+        """
+        return self._post(
+            'wxa/speedupaudit',
+            data={
+                "auditid": auditid
+            }
+        )
+
+    def query_quota(self):
+        """
+        查询服务商的当月提审限额（quota）和加急次数
+        服务商可以调用该接口，查询当月平台分配的提审限额和剩余可提审次数，以及当月分配的审核加急次数和剩余加急次数。（所有旗下小程序共用该额度）
+        https://developers.weixin.qq.com/doc/oplatform/Third-party_Platforms/Mini_Programs/code/query_quota.html
+        """
+        return self._get('wxa/queryquota')
+
+    def get_paid_unionid(self, openid, transaction_id=None, mch_id=None, out_trade_no=None):
+        """
+        用户支付完成后，获取该用户的 UnionId，无需用户授权。
+
+        详情请参考
+        https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/user-info/auth.getPaidUnionId.html
+
+        :param openid: 支付用户唯一标识
+        :param transaction_id: 微信支付订单号，可选
+        :param mch_id: 微信支付分配的商户号，和商户订单号配合使用，可选
+        :param out_trade_no: 微信支付商户订单号，和商户号配合使用
+        :return: 用户唯一标识 unionid
+        """
+        return self._get(
+            'wxa/getpaidunionid',
+            params={
+                'openid': openid,
+                'transaction_id': transaction_id,
+                'mch_id': mch_id,
+                'out_trade_no': out_trade_no,
+            },
+            result_processor=lambda x: x['unionid']
+        )

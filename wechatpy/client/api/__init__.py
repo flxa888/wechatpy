@@ -26,3 +26,4 @@ from wechatpy.client.api.wifi import WeChatWiFi  # NOQA
 from wechatpy.client.api.wxa import WeChatWxa  # NOQA
 from wechatpy.client.api.marketing import WeChatMarketing  # NOQA
 from wechatpy.client.api.wxopen import WeChatWeOpen
+from wechatpy.client.api.cloud import WeChatCloud  # NOQA

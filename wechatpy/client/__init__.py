@@ -41,6 +41,7 @@ class WeChatClient(BaseWeChatClient):
     wxa = api.WeChatWxa()
     marketing = api.WeChatMarketing()
     wxopen = api.WeChatWeOpen()
+    cloud = api.WeChatCloud()
 
     def __init__(self, appid, secret, access_token=None,
                  session=None, timeout=None, auto_retry=True):
