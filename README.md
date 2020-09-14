@@ -15,7 +15,7 @@
 
 微信(WeChat) 公众平台第三方 Python SDK。
 
-[【阅读文档】](https://wechatpy.readthedocs.org/zh_CN/master/) [【快速入门】](https://wechatpy.readthedocs.org/zh_CN/master/quickstart.html)
+[【阅读文档】](https://wechatpy.readthedocs.io/zh_CN/stable/) [【快速入门】](https://wechatpy.readthedocs.io/zh_CN/stable/quickstart.html)
 
 [![Join the chat at https://gitter.im/messense/wechatpy](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/messense/wechatpy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
