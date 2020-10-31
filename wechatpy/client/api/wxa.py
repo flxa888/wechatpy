@@ -106,6 +106,26 @@ class WeChatWxa(BaseWeChatAPI):
             data=subs_data
         )
 
+    def send_u(self, user_id, mp_template_msg, weapp_template_msg=None):
+        """
+        下发小程序和公众号统一的服务消息
+        详情请参考
+        https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/uniform-message/uniformMessage.send.html
+        :param user_id:
+        :param mp_template_msg:
+        :param weapp_template_msg:
+        :return:
+        """
+        subs_data = optionaldict(
+            touser=user_id,
+            weapp_template_msg=weapp_template_msg,
+            mp_template_msg=mp_template_msg
+        )
+        return self._post(
+            'cgi-bin/message/wxopen/template/uniform_send',
+            data=subs_data
+        )
+
     def modify_domain(self, action, request_domain=(), wsrequest_domain=(), upload_domain=(), download_domain=()):
         """
         修改小程序服务器授权域名
